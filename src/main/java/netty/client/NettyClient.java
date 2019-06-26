@@ -10,7 +10,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import netty.client.console.impl.ConsoleCommandManager;
 import netty.client.console.impl.LoginConsoleCommand;
+import netty.client.handler.IMClientHandler;
 import netty.client.handler.LoginResponseHandler;
+import netty.client.handler.MessageResponseHandler;
+import netty.common.codec.PacketCodecHandler;
 import netty.common.codec.PacketDecoder;
 import netty.common.codec.PacketEncoder;
 import netty.common.util.SessionUtil;
@@ -43,9 +46,16 @@ public class NettyClient {
 //                        ch.pipeline().addLast(new IMIdleStateHandler());
 
 //                        ch.pipeline().addLast(new Spliter());
-                        ch.pipeline().addLast(new PacketDecoder());
+//                        ch.pipeline().addLast(new PacketDecoder());
+
+                        //可替代 PacketDecoder 和 PacketEncoder
+                        ch.pipeline().addLast(PacketCodecHandler.INSTANCE);
+
                         // 登录响应处理器
                         ch.pipeline().addLast(new LoginResponseHandler());
+
+                        // 业务消息处理统一入口
+                        ch.pipeline().addLast(IMClientHandler.INSTANCE);
 //                        // 收消息处理器
 //                        ch.pipeline().addLast(new MessageResponseHandler());
 //                        // 创建群响应处理器
@@ -58,9 +68,11 @@ public class NettyClient {
 //                        ch.pipeline().addLast(new ListGroupMembersResponseHandler());
 //                        // 群消息响应
 //                        ch.pipeline().addLast(new GroupMessageResponseHandler());
+
+
 //                        // 登出响应处理器
 //                        ch.pipeline().addLast(new LogoutResponseHandler());
-                        ch.pipeline().addLast(new PacketEncoder());
+//                        ch.pipeline().addLast(new PacketEncoder());
 
                         // 心跳定时器
 //                        ch.pipeline().addLast(new HeartBeatTimerHandler());

@@ -16,6 +16,7 @@ public class LoginResponseHandler extends SimpleChannelInboundHandler<LoginRespo
 
         if (loginResponsePacket.isSuccess()) {
             System.out.println("[" + userName + "]登录成功，userId 为: " + loginResponsePacket.getUserId());
+            // 这里注释掉的化 会一直提示登录
             SessionUtil.bindSession(new Session(userId, userName), ctx.channel());
         } else {
             System.out.println("[" + userName + "]登录失败，原因：" + loginResponsePacket.getReason());

@@ -7,6 +7,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import netty.common.codec.PacketCodecHandler;
+import netty.server.handler.IMHandler;
 import netty.server.handler.LoginRequestHandler;
 
 import java.util.Date;
@@ -36,7 +37,7 @@ public class NettyServer {
                         ch.pipeline().addLast(LoginRequestHandler.INSTANCE);
 //                        ch.pipeline().addLast(HeartBeatRequestHandler.INSTANCE);
 //                        ch.pipeline().addLast(AuthHandler.INSTANCE);
-//                        ch.pipeline().addLast(IMHandler.INSTANCE);
+                        ch.pipeline().addLast(IMHandler.INSTANCE);
                     }
                 });
         bind(serverBootstrap, PORT);

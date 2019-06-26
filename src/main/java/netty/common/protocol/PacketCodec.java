@@ -2,7 +2,9 @@ package netty.common.protocol;
 
 import io.netty.buffer.ByteBuf;
 import netty.common.protocol.request.LoginRequestPacket;
+import netty.common.protocol.request.MessageRequestPacket;
 import netty.common.protocol.response.LoginResponsePacket;
+import netty.common.protocol.response.MessageResponsePacket;
 import netty.common.serialize.Serializer;
 import netty.common.serialize.impl.JSONSerializer;
 
@@ -10,8 +12,7 @@ import netty.common.serialize.impl.JSONSerializer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static netty.common.protocol.command.Command.LOGIN_REQUEST;
-import static netty.common.protocol.command.Command.LOGIN_RESPONSE;
+import static netty.common.protocol.command.Command.*;
 
 
 public class PacketCodec {
@@ -29,8 +30,9 @@ public class PacketCodec {
         packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
         packetTypeMap.put(LOGIN_RESPONSE, LoginResponsePacket.class);
 
-//        packetTypeMap.put(MESSAGE_REQUEST, MessageRequestPacket.class);
-//        packetTypeMap.put(MESSAGE_RESPONSE, MessageResponsePacket.class);
+        // 这里注释没放开导致 io.netty.handler.codec.DecoderException: java.lang.NullPointerException: element
+        packetTypeMap.put(MESSAGE_REQUEST, MessageRequestPacket.class);
+        packetTypeMap.put(MESSAGE_RESPONSE, MessageResponsePacket.class);
 //        packetTypeMap.put(LOGOUT_REQUEST, LogoutRequestPacket.class);
 //        packetTypeMap.put(LOGOUT_RESPONSE, LogoutResponsePacket.class);
 //        packetTypeMap.put(CREATE_GROUP_REQUEST, CreateGroupRequestPacket.class);
