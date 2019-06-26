@@ -26,7 +26,7 @@ public class SessionUtil {
 //    }
 
     public static void unBindSession(Channel channel) {
-        if(hasLogin(channel)) {
+        if (hasLogin(channel)) {
 //            Session session = channel.attr(Attributes.SESSION).get();
             Session session = getSession(channel);
             userIdChannelMap.remove(session.getUserId());
@@ -47,7 +47,7 @@ public class SessionUtil {
 //        return getSession(userId) == null;
 //    }
 
-    private static Session getSession(Channel channel) {
+    public static Session getSession(Channel channel) {
         return channel.attr(Attributes.SESSION).get();
     }
 

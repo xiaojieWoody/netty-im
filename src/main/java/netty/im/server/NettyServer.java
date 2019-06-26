@@ -1,7 +1,5 @@
 package netty.im.server;
 
-
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -10,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import netty.im.handler.PacketCodecHandler;
+import netty.im.server.handler.IMServerHandler;
 import netty.im.server.handler.LoginRequestHandler;
 
 import java.util.Date;
@@ -34,8 +33,10 @@ public class NettyServer {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
+                        // 自定义协议编解码
                         pipeline.addLast(PacketCodecHandler.INSTANCE);
                         pipeline.addLast(LoginRequestHandler.INSTANCE);
+                        pipeline.addLast(IMServerHandler.INSTANCE);
 //                        pipeline.addLast(IMExceptionHandler.INSTANCE);
                     }
                 });

@@ -7,7 +7,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import netty.im.client.command.impl.ConsoleCommandManager;
 import netty.im.client.command.impl.LoginConsoleCommand;
+import netty.im.client.handler.IMClientHandler;
 import netty.im.client.handler.LoginResponseHandler;
+import netty.im.client.handler.MessageResponseHandler;
+import netty.im.codec.PacketDecoder;
+import netty.im.codec.PacketEncoder;
 import netty.im.handler.PacketCodecHandler;
 import netty.im.util.SessionUtil;
 
@@ -33,8 +37,12 @@ public class NettyClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
+                        // 自定义协议编解码
                         pipeline.addLast(PacketCodecHandler.INSTANCE);
-                        pipeline.addLast(new LoginResponseHandler());
+                        // 登录
+                        pipeline.addLast(LoginResponseHandler.INSTANCE);
+                        // 消息收发
+                        pipeline.addLast(IMClientHandler.INSTANCE);
                     }
                 });
         connect(bootstrap, HOST, PORT, MAX_RETRY);
@@ -65,11 +73,20 @@ public class NettyClient {
         ConsoleCommandManager consoleCommandManager = new ConsoleCommandManager();
         LoginConsoleCommand loginConsoleCommand = new LoginConsoleCommand();
 
-        new Thread(()->{
-            if(!SessionUtil.hasLogin(channel)) {
-                loginConsoleCommand.exec(scanner, channel);
-            } else {
-                consoleCommandManager.exec(scanner, channel);
+//        new Thread(()->{
+//            if(!SessionUtil.hasLogin(channel)) {
+//                loginConsoleCommand.exec(scanner, channel);
+//            } else {
+//                consoleCommandManager.exec(scanner, channel);
+//            }
+//        }).start();
+        new Thread(() ->{
+            while (!Thread.interrupted()) {
+                if(!SessionUtil.hasLogin(channel)) {
+                    loginConsoleCommand.exec(scanner, channel);
+                } else {
+                    consoleCommandManager.exec(scanner, channel);
+                }
             }
         }).start();
     }

@@ -3,15 +3,16 @@ package netty.im.protocol;
 
 import io.netty.buffer.ByteBuf;
 import netty.im.protocol.request.LoginRequestPacket;
+import netty.im.protocol.request.MessageRequestPacket;
 import netty.im.protocol.response.LoginResponsePacket;
+import netty.im.protocol.response.MessageResponsePacket;
 import netty.im.serialize.Serializer;
 import netty.im.serialize.impl.JSONSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static netty.im.protocol.command.Command.LOGIN_REQUEST;
-import static netty.im.protocol.command.Command.LOGIN_RESPONSE;
+import static netty.im.protocol.command.Command.*;
 
 
 /**
@@ -30,6 +31,9 @@ public class PacketCodec {
         packetTypeMap = new HashMap<>();
         packetTypeMap.put(LOGIN_REQUEST, LoginRequestPacket.class);
         packetTypeMap.put(LOGIN_RESPONSE, LoginResponsePacket.class);
+        // 不添加会报 io.netty.handler.codec.DecoderException: java.lang.NullPointerException: element
+        packetTypeMap.put(MESSAGE_REQUEST, MessageRequestPacket.class);
+        packetTypeMap.put(MESSAGE_RESPONSE, MessageResponsePacket.class);
 
         serializerMap = new HashMap<>();
         JSONSerializer serializer = new JSONSerializer();

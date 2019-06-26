@@ -17,6 +17,11 @@ public class PacketCodecHandler extends MessageToMessageCodec<ByteBuf, Packet> {
     private PacketCodecHandler() {}
 
     @Override
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        out.add(PacketCodec.INSTANCE.decode(in));
+    }
+
+    @Override
     protected void encode(ChannelHandlerContext ctx, Packet in, List<Object> out) throws Exception {
 //        PacketCodec.INSTANCE.encode(out, msg);
 //        ByteBuf byteBuf = ByteBufAllocator.io
@@ -25,10 +30,5 @@ public class PacketCodecHandler extends MessageToMessageCodec<ByteBuf, Packet> {
         ByteBuf byteBuf = ctx.channel().alloc().ioBuffer();
         PacketCodec.INSTANCE.encode(byteBuf, in);
         out.add(byteBuf);
-    }
-
-    @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        out.add(PacketCodec.INSTANCE.decode(in));
     }
 }

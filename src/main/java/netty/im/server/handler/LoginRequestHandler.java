@@ -39,7 +39,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
             String userId = IDUtil.randomId();
             String userName = loginRequestPacket.getUserName();
             loginResponsePacket.setUserId(userId);
-            System.out.println("用户：[" + userName + "]登录成功！");
+            System.out.println("用户：["+ userId + ":" + userName + "]登录成功！");
             SessionUtil.bindSession(new Session(userId, userName), ctx.channel());
         } else {
             loginResponsePacket.setSuccess(false);
@@ -58,4 +58,6 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         SessionUtil.unBindSession(ctx.channel());
     }
+
+
 }
