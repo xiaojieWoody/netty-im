@@ -1,11 +1,13 @@
 package netty.im.client.command.impl;
 
 import io.netty.channel.Channel;
+import lombok.extern.slf4j.Slf4j;
 import netty.im.client.command.ConsoleCommand;
 import netty.im.protocol.request.MessageRequestPacket;
 
 import java.util.Scanner;
 
+@Slf4j
 public class SendToUserConsoleCommand implements ConsoleCommand {
 
     public static final SendToUserConsoleCommand INSTANCE = new SendToUserConsoleCommand();
@@ -20,6 +22,7 @@ public class SendToUserConsoleCommand implements ConsoleCommand {
 //        messageRequestPacket.setMessage(message);
 //        messageRequestPacket.setToUserId(toUserId);
 //        channel.writeAndFlush(messageRequestPacket);
+        log.info("SendToUserConsoleCommand toUserId{}:message{}", toUserId, message);
         channel.writeAndFlush(new MessageRequestPacket(toUserId, message));
     }
 }

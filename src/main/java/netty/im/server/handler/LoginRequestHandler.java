@@ -1,14 +1,17 @@
 package netty.im.server.handler;
 
+import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import lombok.extern.slf4j.Slf4j;
 import netty.im.protocol.request.LoginRequestPacket;
 import netty.im.protocol.response.LoginResponsePacket;
 import netty.im.session.Session;
 import netty.im.util.IDUtil;
 import netty.im.util.SessionUtil;
 
+@Slf4j
 @ChannelHandler.Sharable
 public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginRequestPacket> {
 
@@ -33,7 +36,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
         LoginResponsePacket loginResponsePacket = new LoginResponsePacket();
         loginResponsePacket.setVersion(loginRequestPacket.getVersion());
         loginResponsePacket.setUserName(loginRequestPacket.getUserName());
-
+        log.info("LoginRequestHandler channelRead0...... {}", JSON.toJSONString(loginResponsePacket));
         if(valid(loginRequestPacket)) {
             loginResponsePacket.setSuccess(true);
             String userId = IDUtil.randomId();

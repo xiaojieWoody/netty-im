@@ -1,17 +1,19 @@
 package netty.im.server;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import netty.im.handler.PacketCodecHandler;
+import netty.im.server.command.impl.ServerConsoleCommandManager;
 import netty.im.server.handler.IMServerHandler;
 import netty.im.server.handler.LoginRequestHandler;
+import sun.nio.ch.ThreadPool;
 
 import java.util.Date;
+import java.util.Scanner;
 
 public class NettyServer {
 
@@ -48,9 +50,24 @@ public class NettyServer {
         serverBootstrap.bind(port).addListener(future -> {
             if (future.isSuccess()) {
                 System.out.println(new Date() + "服务端端口[" + port + "]绑定成功！");
+//                startServerConsoleThread();
             } else {
                 System.out.println("服务端端口[" + port + "]绑定失败!");
             }
         });
+        startServerConsoleThread();
+    }
+
+    private static void startServerConsoleThread() {
+        Scanner scanner = new Scanner(System.in);
+//        System.out.println("【输入11，选择单推用户；输入12，推送某群用户；输入13，推送所有用户】");
+//        String command = scanner.next();
+
+        new Thread(()->{
+            while (!Thread.interrupted()) {
+//                ServerConsoleCommandManager.INSTANCE.exec(scanner, command);
+                ServerConsoleCommandManager.INSTANCE.exec(scanner);
+            }
+        }).start();
     }
 }

@@ -7,4 +7,9 @@ public interface Command {
     byte LOGIN_RESPONSE = 2;
     byte MESSAGE_REQUEST = 3;
     byte MESSAGE_RESPONSE = 4;
+
+    String SINGLE_PUSH = "11";
+    String GROUP_PUSH = "12";
+    String ALL_PUSH = "13";
+
 }

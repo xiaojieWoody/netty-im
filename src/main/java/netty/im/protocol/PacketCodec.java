@@ -1,14 +1,18 @@
 package netty.im.protocol;
 
 
+import com.alibaba.fastjson.JSON;
 import io.netty.buffer.ByteBuf;
+import lombok.extern.slf4j.Slf4j;
 import netty.im.protocol.request.LoginRequestPacket;
 import netty.im.protocol.request.MessageRequestPacket;
+import netty.im.protocol.request.ServerPushSingleMessagePacket;
 import netty.im.protocol.response.LoginResponsePacket;
 import netty.im.protocol.response.MessageResponsePacket;
 import netty.im.serialize.Serializer;
 import netty.im.serialize.impl.JSONSerializer;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +23,7 @@ import static netty.im.protocol.command.Command.*;
  * 自定义协议 编解码
  * 魔数（4）- 版本号（1） - 序列化算法（1） - 指令（1） - 数据长度（4）- 数据（n）
  */
+@Slf4j
 public class PacketCodec {
     public static final PacketCodec INSTANCE = new PacketCodec();
 
@@ -34,6 +39,8 @@ public class PacketCodec {
         // 不添加会报 io.netty.handler.codec.DecoderException: java.lang.NullPointerException: element
         packetTypeMap.put(MESSAGE_REQUEST, MessageRequestPacket.class);
         packetTypeMap.put(MESSAGE_RESPONSE, MessageResponsePacket.class);
+
+        packetTypeMap.put(Byte.valueOf(SINGLE_PUSH), ServerPushSingleMessagePacket.class);
 
         serializerMap = new HashMap<>();
         JSONSerializer serializer = new JSONSerializer();
@@ -60,6 +67,8 @@ public class PacketCodec {
         Serializer serialize = getSerialize(serializeAlgorithm);
 
         if (packetType != null && serialize != null) {
+            Packet deserialize = serialize.deserialize(packetType, bytes);
+            log.info("PacketCodec decode............{}",JSON.toJSONString(deserialize));
             return serialize.deserialize(packetType, bytes);
         }
 
@@ -67,7 +76,7 @@ public class PacketCodec {
     }
 
     public void encode(ByteBuf byteBuf, Packet packet) {
-
+        log.info("PacketCodec encode.............{}" , JSON.toJSONString(packet));
         byte[] bytes = Serializer.DEFAULT.serialize(packet);
 
 //        byteBuf.writeByte(MAGIC_NUMBER);
@@ -77,6 +86,14 @@ public class PacketCodec {
         byteBuf.writeByte(packet.getCommand());
 //        byteBuf.writeByte(bytes.length);
         byteBuf.writeInt(bytes.length);
+
+        try {
+            log.info("encode bytes..............{}", new String(bytes, "utf-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            log.error("PacketCodec encode bytes.....", e);
+        }
+
         byteBuf.writeBytes(bytes);
     }
 

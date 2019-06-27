@@ -13,6 +13,7 @@ import netty.im.client.handler.MessageResponseHandler;
 import netty.im.codec.PacketDecoder;
 import netty.im.codec.PacketEncoder;
 import netty.im.handler.PacketCodecHandler;
+import netty.im.server.handler.AuthHandler;
 import netty.im.util.SessionUtil;
 
 import java.util.Date;
@@ -41,7 +42,9 @@ public class NettyClient {
                         pipeline.addLast(PacketCodecHandler.INSTANCE);
                         // 登录
                         pipeline.addLast(LoginResponseHandler.INSTANCE);
-                        // 消息收发
+                        // 登录后不在校验登录
+                        pipeline.addLast(AuthHandler.INSTANCE);
+                        // 消息收发逻辑
                         pipeline.addLast(IMClientHandler.INSTANCE);
                     }
                 });
@@ -90,6 +93,4 @@ public class NettyClient {
             }
         }).start();
     }
-
-
 }
