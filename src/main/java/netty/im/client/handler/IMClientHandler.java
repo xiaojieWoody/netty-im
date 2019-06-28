@@ -10,8 +10,7 @@ import netty.im.protocol.Packet;
 import java.util.HashMap;
 import java.util.Map;
 
-import static netty.im.protocol.command.Command.MESSAGE_RESPONSE;
-import static netty.im.protocol.command.Command.SINGLE_PUSH;
+import static netty.im.protocol.command.Command.*;
 
 @Slf4j
 @ChannelHandler.Sharable
@@ -26,6 +25,9 @@ public class IMClientHandler extends SimpleChannelInboundHandler<Packet> {
 
         clientHandlerMap.put(Byte.valueOf(SINGLE_PUSH), ServerPushSingleHandler.INSTANCE);
         clientHandlerMap.put(MESSAGE_RESPONSE, MessageResponseHandler.INSTANCE);
+        clientHandlerMap.put(CREATE_GROUP_RESPONSE, CreateGroupResponseHandler.INSTANCE);
+        clientHandlerMap.put(QUIT_GROUP_RESPONSE, QuitGroupResponseHandler.INSTANCE);
+        clientHandlerMap.put(JOIN_GROUP_RESPONSE, JoinGroupResponseHandler.INSTANCE);
     }
 
     @Override

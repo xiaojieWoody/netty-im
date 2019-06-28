@@ -4,11 +4,8 @@ package netty.im.protocol;
 import com.alibaba.fastjson.JSON;
 import io.netty.buffer.ByteBuf;
 import lombok.extern.slf4j.Slf4j;
-import netty.im.protocol.request.LoginRequestPacket;
-import netty.im.protocol.request.MessageRequestPacket;
-import netty.im.protocol.request.ServerPushSingleMessagePacket;
-import netty.im.protocol.response.LoginResponsePacket;
-import netty.im.protocol.response.MessageResponsePacket;
+import netty.im.protocol.request.*;
+import netty.im.protocol.response.*;
 import netty.im.serialize.Serializer;
 import netty.im.serialize.impl.JSONSerializer;
 
@@ -39,6 +36,12 @@ public class PacketCodec {
         // 不添加会报 io.netty.handler.codec.DecoderException: java.lang.NullPointerException: element
         packetTypeMap.put(MESSAGE_REQUEST, MessageRequestPacket.class);
         packetTypeMap.put(MESSAGE_RESPONSE, MessageResponsePacket.class);
+        packetTypeMap.put(CREATE_GROUP_REQUEST, CreateGroupRequestPacket.class);
+        packetTypeMap.put(CREATE_GROUP_RESPONSE, CreateGroupResponsePacket.class);
+        packetTypeMap.put(QUIT_GROUP_REQUEST, QuitGroupRequestPacket.class);
+        packetTypeMap.put(QUIT_GROUP_RESPONSE, QuitGroupResponsePacket.class);
+        packetTypeMap.put(JOIN_GROUP_REQUEST, JoinGroupRequestPacket.class);
+        packetTypeMap.put(JOIN_GROUP_RESPONSE, JoinGroupResponsePacket.class);
 
         packetTypeMap.put(Byte.valueOf(SINGLE_PUSH), ServerPushSingleMessagePacket.class);
 
@@ -67,8 +70,7 @@ public class PacketCodec {
         Serializer serialize = getSerialize(serializeAlgorithm);
 
         if (packetType != null && serialize != null) {
-            Packet deserialize = serialize.deserialize(packetType, bytes);
-            log.info("PacketCodec decode............{}",JSON.toJSONString(deserialize));
+            log.info("PacketCodec decode............{}",JSON.toJSONString(serialize.deserialize(packetType, bytes)));
             return serialize.deserialize(packetType, bytes);
         }
 

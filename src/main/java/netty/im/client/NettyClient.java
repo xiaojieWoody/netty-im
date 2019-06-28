@@ -38,12 +38,10 @@ public class NettyClient {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
-                        // 自定义协议编解码
+                        // 自定义协议编解码  可替代 PacketDecoder和PacketEncoder
                         pipeline.addLast(PacketCodecHandler.INSTANCE);
                         // 登录
                         pipeline.addLast(LoginResponseHandler.INSTANCE);
-                        // 登录后不在校验登录
-                        pipeline.addLast(AuthHandler.INSTANCE);
                         // 消息收发逻辑
                         pipeline.addLast(IMClientHandler.INSTANCE);
                     }

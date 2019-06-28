@@ -10,7 +10,7 @@ import netty.im.protocol.Packet;
 import java.util.HashMap;
 import java.util.Map;
 
-import static netty.im.protocol.command.Command.MESSAGE_REQUEST;
+import static netty.im.protocol.command.Command.*;
 
 @Slf4j
 @ChannelHandler.Sharable
@@ -23,7 +23,16 @@ public class IMServerHandler extends SimpleChannelInboundHandler<Packet> {
         handlerMap = new HashMap<>();
 
 //        handlerMap.put(REQUEST_MESSAGE, RequestMessageHandler.class);
+        // 单发消息
         handlerMap.put(MESSAGE_REQUEST, MessageRequestHandler.INSTANCE);
+        // 创建群组请求
+        handlerMap.put(CREATE_GROUP_REQUEST, CreateGroupRequestHandler.INSTANCE);
+        // 加入群组
+        handlerMap.put(JOIN_GROUP_REQUEST, JoinGroupRequestHandler.INSTANCE);
+        // 退出群组请求
+        handlerMap.put(QUIT_GROUP_REQUEST, QuitGroupRequestHandler.INSTANCE);
+        // 获取组内成员
+//        handlerMap.put(LIST_GROUP_MEMBER_REQUEST, ListGroupMemberRequestHandler.INSTANCE);
     }
 
     @Override

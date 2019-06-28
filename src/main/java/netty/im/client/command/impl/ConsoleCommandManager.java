@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import netty.im.client.command.ConsoleCommand;
-import netty.im.util.SessionUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +19,9 @@ public class ConsoleCommandManager implements ConsoleCommand {
 
         consoleCommandMap.put("sendToUser", SendToUserConsoleCommand.INSTANCE);
 //        consoleCommandMap.put("sendToUser", new SendToUserConsoleCommand());
+        consoleCommandMap.put("createGroup", CreateGroupConsoleCommand.INSTANCE);
+        consoleCommandMap.put("quitGroup", QuitGroupConsoleCommand.INSTANCE);
+        consoleCommandMap.put("joinGroup", JoinGroupConsoleCommand.INSTANCE);
     }
 
     @Override
@@ -27,9 +29,6 @@ public class ConsoleCommandManager implements ConsoleCommand {
         // 拿到第一个指令
         String command = scanner.next();
         log.info("ConsoleCommandManager 拿到第一个指令：{}", command);
-        if (!SessionUtil.hasLogin(channel)) {
-            return;
-        }
         ConsoleCommand consoleCommand = consoleCommandMap.get(command);
         log.info("ConsoleCommandManager 指令{}", JSON.toJSONString(consoleCommand));
         if (consoleCommand != null) {

@@ -23,6 +23,12 @@ public class SendToUserConsoleCommand implements ConsoleCommand {
 //        messageRequestPacket.setToUserId(toUserId);
 //        channel.writeAndFlush(messageRequestPacket);
         log.info("SendToUserConsoleCommand toUserId{}:message{}", toUserId, message);
-        channel.writeAndFlush(new MessageRequestPacket(toUserId, message));
+        long startTime = System.currentTimeMillis();
+        channel.writeAndFlush(new MessageRequestPacket(toUserId, message)).addListener(future -> {
+            if(future.isSuccess()) {
+                long endTime = System.currentTimeMillis();
+                System.out.println("发送消息["+message+"]给["+toUserId+"]用户成功，耗时："+(endTime - startTime)+"毫秒");
+            }
+        });
     }
 }

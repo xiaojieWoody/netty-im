@@ -6,8 +6,10 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import netty.im.codec.Spliter;
 import netty.im.handler.PacketCodecHandler;
 import netty.im.server.command.impl.ServerConsoleCommandManager;
+import netty.im.server.handler.AuthHandler;
 import netty.im.server.handler.IMServerHandler;
 import netty.im.server.handler.LoginRequestHandler;
 import sun.nio.ch.ThreadPool;
@@ -35,9 +37,17 @@ public class NettyServer {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
+                        // 校验是否是自定义协议
+                        // 不能设置成单例模式
+//                        pipeline.addLast(Spliter.INSTANCE);
+                        pipeline.addLast(new Spliter());
                         // 自定义协议编解码
                         pipeline.addLast(PacketCodecHandler.INSTANCE);
+                        // 登录
                         pipeline.addLast(LoginRequestHandler.INSTANCE);
+                        // 登录校验
+                        pipeline.addLast(AuthHandler.INSTANCE);
+                        // 业务消息处理
                         pipeline.addLast(IMServerHandler.INSTANCE);
 //                        pipeline.addLast(IMExceptionHandler.INSTANCE);
                     }

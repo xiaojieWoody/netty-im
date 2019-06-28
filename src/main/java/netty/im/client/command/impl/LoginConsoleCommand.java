@@ -6,8 +6,6 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import netty.im.client.command.ConsoleCommand;
 import netty.im.protocol.request.LoginRequestPacket;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
 @Slf4j
