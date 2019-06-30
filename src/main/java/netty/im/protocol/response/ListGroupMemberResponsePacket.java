@@ -6,20 +6,18 @@ import netty.im.session.Session;
 
 import java.util.List;
 
-import static netty.im.protocol.command.Command.JOIN_GROUP_RESPONSE;
+import static netty.im.protocol.command.Command.LIST_GROUP_MEMBER_RESPONSE;
 
 @Data
-public class JoinGroupResponsePacket extends Packet {
+public class ListGroupMemberResponsePacket extends Packet {
 
     private boolean success;
     private String reason;
+    private List<Session> groupMembers;
     private String groupId;
-    private String userId;
-    private String userName;
-//    private List<Session> groupMemebers;
 
     @Override
     public Byte getCommand() {
-        return JOIN_GROUP_RESPONSE;
+        return LIST_GROUP_MEMBER_RESPONSE;
     }
 }

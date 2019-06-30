@@ -4,6 +4,7 @@ package netty.im.protocol;
 import com.alibaba.fastjson.JSON;
 import io.netty.buffer.ByteBuf;
 import lombok.extern.slf4j.Slf4j;
+import netty.im.client.handler.HeartBeatTimerHandler;
 import netty.im.protocol.request.*;
 import netty.im.protocol.response.*;
 import netty.im.serialize.Serializer;
@@ -42,8 +43,23 @@ public class PacketCodec {
         packetTypeMap.put(QUIT_GROUP_RESPONSE, QuitGroupResponsePacket.class);
         packetTypeMap.put(JOIN_GROUP_REQUEST, JoinGroupRequestPacket.class);
         packetTypeMap.put(JOIN_GROUP_RESPONSE, JoinGroupResponsePacket.class);
+        packetTypeMap.put(LIST_GROUP_MEMBER_REQUEST, ListGroupMemberRequestPacket.class);
+        packetTypeMap.put(LIST_GROUP_MEMBER_RESPONSE, ListGroupMemberResponsePacket.class);
+        packetTypeMap.put(SEDN_MESSAGE_TO_GROUP_REQUEST, SendMessageToGroupRequestPacket.class);
+        packetTypeMap.put(SEND_MESSAGE_TO_GROUP_RESPONSE, SendMessageToGroupResponsePacket.class);
 
-        packetTypeMap.put(Byte.valueOf(SINGLE_PUSH), ServerPushSingleMessagePacket.class);
+        packetTypeMap.put(SINGLE_PUSH_REQUEST, ServerPushSingleMessageRequestPacket.class);
+        packetTypeMap.put(SINGLE_PUSH_RESPONSE, ServerPushSingleMessageResponsePacket.class);
+        packetTypeMap.put(GROUP_PUSH_REQUEST, ServerPushGroupMessageRequestPacket.class);
+        packetTypeMap.put(GROUP_PUSH_RESPONSE, ServerPushGroupMessageResponsePacket.class);
+        packetTypeMap.put(ALL_PUSH_REQUEST, ServerPushAllMessageRequestPacket.class);
+        packetTypeMap.put(ALL_PUSH_RESPONSE, ServerPushAllMessageResponsePacket.class);
+
+        packetTypeMap.put(HEARTBEAT_REQUEST, HeartBeatRequestPacket.class);
+        packetTypeMap.put(HEARTBEAT_RESPONSE, HeartBeatResponsePacket.class);
+
+        packetTypeMap.put(LOGOUT_REQUEST, LogoutRequestPacket.class);
+        packetTypeMap.put(LOGOUT_RESPONSE, LogoutResponsePacket.class);
 
         serializerMap = new HashMap<>();
         JSONSerializer serializer = new JSONSerializer();

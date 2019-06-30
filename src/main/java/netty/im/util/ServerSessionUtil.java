@@ -5,12 +5,10 @@ import io.netty.channel.group.ChannelGroup;
 import netty.im.attribute.Attributes;
 import netty.im.session.Session;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SessionUtil {
+public class ServerSessionUtil {
 
     private static final Map<String, Channel> userIdChannelMap = new ConcurrentHashMap<>();
     private static final Map<String, ChannelGroup> groupIdChannelGroupMap = new ConcurrentHashMap<>();
@@ -33,8 +31,23 @@ public class SessionUtil {
             Session session = getSession(channel);
             userIdChannelMap.remove(session.getUserId());
             channel.attr(Attributes.SESSION).set(null);
-            System.out.println("用户[" + session.getUserId() + ":" + session.getUserName() + "]退出登录！");
         }
+    }
+
+    public static List<Session> getGroupMember(String groupId) {
+        List<Session> result = new ArrayList<>();
+        ChannelGroup group = getChannelGroup(groupId);
+        if (group != null) {
+            for (Channel channel : group) {
+                result.add(getSession(channel));
+            }
+        }
+        return result;
+    }
+
+    public static void removeGroup(String groupId) {
+        groupIdChannelGroupMap.get(groupId).close();
+        groupIdChannelGroupMap.remove(groupId);
     }
 
     public static Channel getChannelByUserId(String userId) {
@@ -72,6 +85,38 @@ public class SessionUtil {
         if (getChannelGroup(groupId) != null) {
             getChannelGroup(groupId).remove(channel);
         }
+    }
+
+    public static List<ChannelGroup> getAllChannelGroup() {
+        return new ArrayList<>(groupIdChannelGroupMap.values());
+    }
+
+    public static List<Channel> getAllChannel() {
+        return new ArrayList<>(userIdChannelMap.values());
+    }
+
+    public static List<String> listGroupIdByChannel(Channel channel) {
+        List<ChannelGroup> allChannelGroup = getAllChannelGroup();
+        List<String> result = new ArrayList<>();
+        for (ChannelGroup group : allChannelGroup) {
+            for (Channel ch : group) {
+                if(ch == channel) {
+                    result.add(getGroupIdByGroupChannel(group));
+                }
+            }
+        }
+        return result;
+    }
+
+    public static String getGroupIdByGroupChannel(ChannelGroup channelGroup) {
+        Iterator<Map.Entry<String, ChannelGroup>> iterator = groupIdChannelGroupMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, ChannelGroup> next = iterator.next();
+            if (next.getValue() == channelGroup) {
+                return next.getKey();
+            }
+        }
+        return null;
     }
 
     public static boolean hasGroup(String groupId) {

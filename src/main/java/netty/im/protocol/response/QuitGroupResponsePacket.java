@@ -11,10 +11,12 @@ import static netty.im.protocol.command.Command.QUIT_GROUP_RESPONSE;
 @Data
 public class QuitGroupResponsePacket extends Packet {
 
+    private boolean success;
+    private String reason;
     private String groupId;
     private String userId;
     private String userName;
-    private List<Session> membersInfo;
+//    private List<Session> membersInfo;
 
     @Override
     public Byte getCommand() {

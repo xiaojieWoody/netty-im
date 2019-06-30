@@ -1,9 +1,10 @@
-package netty.im.client.command.impl;
+package netty.im.client.command.impl.manager;
 
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import netty.im.client.command.ConsoleCommand;
+import netty.im.client.command.impl.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,11 @@ public class ConsoleCommandManager implements ConsoleCommand {
         consoleCommandMap.put("createGroup", CreateGroupConsoleCommand.INSTANCE);
         consoleCommandMap.put("quitGroup", QuitGroupConsoleCommand.INSTANCE);
         consoleCommandMap.put("joinGroup", JoinGroupConsoleCommand.INSTANCE);
+        consoleCommandMap.put("listGroupUser", ListGroupUserConsoleCommand.INSTANCE);
+        consoleCommandMap.put("sendGroup", SendMessageToGroupConsoleCommand.INSTANCE);
+        consoleCommandMap.put("logout", LogoutConsoleCommand.INSTANCE);
+        //登录
+        consoleCommandMap.put("login", new LoginConsoleCommand());
     }
 
     @Override

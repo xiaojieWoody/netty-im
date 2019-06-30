@@ -5,16 +5,16 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import netty.im.client.command.impl.ConsoleCommandManager;
+import netty.im.client.command.impl.manager.ConsoleCommandManager;
 import netty.im.client.command.impl.LoginConsoleCommand;
 import netty.im.client.handler.IMClientHandler;
-import netty.im.client.handler.LoginResponseHandler;
-import netty.im.client.handler.MessageResponseHandler;
-import netty.im.codec.PacketDecoder;
-import netty.im.codec.PacketEncoder;
+import netty.im.client.handler.HeartBeatTimerHandler;
+import netty.im.client.handler.response.LogoutResponseHandler;
+import netty.im.codec.Spliter;
+import netty.im.handler.IMIdleStateHandler;
+import netty.im.client.handler.response.LoginResponseHandler;
 import netty.im.handler.PacketCodecHandler;
-import netty.im.server.handler.AuthHandler;
-import netty.im.util.SessionUtil;
+import netty.im.util.ClientSessionUtil;
 
 import java.util.Date;
 import java.util.Scanner;
@@ -27,6 +27,10 @@ public class NettyClient {
     public static final int MAX_RETRY = 5;
 
     public static void main(String[] args){
+        connectServer();
+    }
+
+    public static void connectServer() {
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(workerGroup)
@@ -37,13 +41,25 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
+                        // 每个客户端都会有各自的各种Handler，是否单例无所谓
+                        // 服务端，无状态的Handler为单例
                         ChannelPipeline pipeline = ch.pipeline();
+                        // 空闲检测
+//                        pipeline.addLast(IMIdleStateHandler.INSTANCE);
+                        pipeline.addLast(new IMIdleStateHandler());
+                        // 自定义协议校验，不能使用单例模式
+                        pipeline.addLast(new Spliter());
                         // 自定义协议编解码  可替代 PacketDecoder和PacketEncoder
                         pipeline.addLast(PacketCodecHandler.INSTANCE);
                         // 登录
                         pipeline.addLast(LoginResponseHandler.INSTANCE);
+                        // 退出登录
+                        pipeline.addLast(LogoutResponseHandler.INSTANCE);
                         // 消息收发逻辑
                         pipeline.addLast(IMClientHandler.INSTANCE);
+                        // 心跳定时检测器
+                        pipeline.addLast(HeartBeatTimerHandler.INSTANCE);
+
                     }
                 });
         connect(bootstrap, HOST, PORT, MAX_RETRY);
@@ -75,7 +91,7 @@ public class NettyClient {
         LoginConsoleCommand loginConsoleCommand = new LoginConsoleCommand();
 
 //        new Thread(()->{
-//            if(!SessionUtil.hasLogin(channel)) {
+//            if(!ServerSessionUtil.hasLogin(channel)) {
 //                loginConsoleCommand.exec(scanner, channel);
 //            } else {
 //                consoleCommandManager.exec(scanner, channel);
@@ -83,7 +99,8 @@ public class NettyClient {
 //        }).start();
         new Thread(() ->{
             while (!Thread.interrupted()) {
-                if(!SessionUtil.hasLogin(channel)) {
+//                if(!ServerSessionUtil.hasLogin(channel)) {
+                if(!ClientSessionUtil.hasClientLogin(channel)) {
                     loginConsoleCommand.exec(scanner, channel);
                 } else {
                     consoleCommandManager.exec(scanner, channel);

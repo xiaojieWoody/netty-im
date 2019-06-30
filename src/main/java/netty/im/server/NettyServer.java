@@ -3,16 +3,17 @@ package netty.im.server;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import netty.im.codec.Spliter;
+import netty.im.handler.IMIdleStateHandler;
 import netty.im.handler.PacketCodecHandler;
-import netty.im.server.command.impl.ServerConsoleCommandManager;
+import netty.im.server.command.impl.manager.ServerConsoleCommandManager;
 import netty.im.server.handler.AuthHandler;
 import netty.im.server.handler.IMServerHandler;
-import netty.im.server.handler.LoginRequestHandler;
-import sun.nio.ch.ThreadPool;
+import netty.im.server.handler.request.HeartBeatRequestHandler;
+import netty.im.server.handler.request.LoginRequestHandler;
+import netty.im.server.handler.request.LogoutRequestHandler;
 
 import java.util.Date;
 import java.util.Scanner;
@@ -37,19 +38,25 @@ public class NettyServer {
                     @Override
                     protected void initChannel(NioSocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
-                        // 校验是否是自定义协议
-                        // 不能设置成单例模式
-//                        pipeline.addLast(Spliter.INSTANCE);
+                        // 空闲检测
+//                        pipeline.addLast(IMIdleStateHandler.INSTANCE);
+                        pipeline.addLast(new IMIdleStateHandler());
+                        // 校验是否是自定义协议，不能使用单例模式
                         pipeline.addLast(new Spliter());
                         // 自定义协议编解码
                         pipeline.addLast(PacketCodecHandler.INSTANCE);
                         // 登录
                         pipeline.addLast(LoginRequestHandler.INSTANCE);
+                        // 退出登录处理
+                        pipeline.addLast(LogoutRequestHandler.INSTANCE);
+                        // 心跳检测
+                        pipeline.addLast(HeartBeatRequestHandler.INSTANCE);
                         // 登录校验
                         pipeline.addLast(AuthHandler.INSTANCE);
                         // 业务消息处理
                         pipeline.addLast(IMServerHandler.INSTANCE);
 //                        pipeline.addLast(IMExceptionHandler.INSTANCE);
+
                     }
                 });
         bind(serverBootstrap, PORT);

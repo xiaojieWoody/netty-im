@@ -1,4 +1,4 @@
-package netty.im.server.handler;
+package netty.im.server.handler.request;
 
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.ChannelHandler;
@@ -9,7 +9,7 @@ import netty.im.protocol.request.LoginRequestPacket;
 import netty.im.protocol.response.LoginResponsePacket;
 import netty.im.session.Session;
 import netty.im.util.IDUtil;
-import netty.im.util.SessionUtil;
+import netty.im.util.ServerSessionUtil;
 
 @Slf4j
 @ChannelHandler.Sharable
@@ -23,7 +23,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
 //        String userId = IDUtil.randomId();
 //        String userName = loginRequestPacket.getUserName();
 //        Session session = new Session(userId, userName);
-//        SessionUtil.bindSession(session, ctx.channel());
+//        ServerSessionUtil.bindSession(session, ctx.channel());
 //
 //        LoginResponsePacket loginResponsePacket = new LoginResponsePacket();
 //        if(loginRequestPacket.getPassword().equals("pwd")) {
@@ -43,7 +43,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
             String userName = loginRequestPacket.getUserName();
             loginResponsePacket.setUserId(userId);
             System.out.println("用户：["+ userId + ":" + userName + "]登录成功！");
-            SessionUtil.bindSession(new Session(userId, userName), ctx.channel());
+            ServerSessionUtil.bindSession(new Session(userId, userName), ctx.channel());
         } else {
             loginResponsePacket.setSuccess(false);
             loginResponsePacket.setReason("账号密码错误！");
@@ -59,7 +59,7 @@ public class LoginRequestHandler extends SimpleChannelInboundHandler<LoginReques
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        SessionUtil.unBindSession(ctx.channel());
+        ServerSessionUtil.unBindSession(ctx.channel());
     }
 
 

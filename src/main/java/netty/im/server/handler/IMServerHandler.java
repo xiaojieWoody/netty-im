@@ -6,6 +6,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
 import netty.im.protocol.Packet;
+import netty.im.server.handler.request.*;
+import netty.im.server.handler.response.ServerPushAllResponseHandler;
+import netty.im.server.handler.response.ServerPushGroupResponseHandler;
+import netty.im.server.handler.response.ServerPushSingleResponseHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,7 +36,18 @@ public class IMServerHandler extends SimpleChannelInboundHandler<Packet> {
         // 退出群组请求
         handlerMap.put(QUIT_GROUP_REQUEST, QuitGroupRequestHandler.INSTANCE);
         // 获取组内成员
-//        handlerMap.put(LIST_GROUP_MEMBER_REQUEST, ListGroupMemberRequestHandler.INSTANCE);
+        handlerMap.put(LIST_GROUP_MEMBER_REQUEST, ListGroupMemberRequestHandler.INSTANCE);
+        // 给群组发送消息
+        handlerMap.put(SEDN_MESSAGE_TO_GROUP_REQUEST, SendMessageToGroupRequestHandler.INSTANCE);
+
+        // 单发消息响应处理
+        handlerMap.put(SINGLE_PUSH_RESPONSE, ServerPushSingleResponseHandler.INSTANCE);
+        // 群发消息响应处理
+        handlerMap.put(GROUP_PUSH_RESPONSE, ServerPushGroupResponseHandler.INSTANCE);
+        // Push All消息响应处理
+        handlerMap.put(ALL_PUSH_RESPONSE, ServerPushAllResponseHandler.INSTANCE);
+        // 心跳处理
+        handlerMap.put(HEARTBEAT_REQUEST, HeartBeatRequestHandler.INSTANCE);
     }
 
     @Override

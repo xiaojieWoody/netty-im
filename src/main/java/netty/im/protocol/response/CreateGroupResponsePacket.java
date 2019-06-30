@@ -11,8 +11,12 @@ import static netty.im.protocol.command.Command.CREATE_GROUP_RESPONSE;
 @Data
 public class CreateGroupResponsePacket extends Packet {
 
+    private boolean success;
+    private String reason;
     private String groupId;
+    private String createUserId;
     private List<Session> membersInfo;
+    private List<String> extra;
 
     @Override
     public Byte getCommand() {

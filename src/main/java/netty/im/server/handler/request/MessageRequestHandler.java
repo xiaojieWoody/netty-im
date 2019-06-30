@@ -1,4 +1,4 @@
-package netty.im.server.handler;
+package netty.im.server.handler.request;
 
 import com.alibaba.fastjson.JSON;
 import io.netty.channel.Channel;
@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import netty.im.protocol.request.MessageRequestPacket;
 import netty.im.protocol.response.MessageResponsePacket;
 import netty.im.session.Session;
-import netty.im.util.SessionUtil;
+import netty.im.util.ServerSessionUtil;
 
 @Slf4j
 @ChannelHandler.Sharable
@@ -20,7 +20,7 @@ public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRe
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, MessageRequestPacket messageRequestPacket) throws Exception {
-//        if(SessionUtil.hasLogin(ctx.channel())) {
+//        if(ServerSessionUtil.hasLogin(ctx.channel())) {
 //            MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
 //            messageResponsePacket.setToUserId(messageRequestPacket.getUserId());
 //            messageResponsePacket.setMessage(messageRequestPacket.getMessage());
@@ -30,7 +30,7 @@ public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRe
 
         long startTime = System.currentTimeMillis();
         // 发送方Session
-        Session sendSession = SessionUtil.getSession(ctx.channel());
+        Session sendSession = ServerSessionUtil.getSession(ctx.channel());
         // 要发送的消息
         MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
         messageResponsePacket.setFromUserId(sendSession.getUserId());
@@ -38,20 +38,16 @@ public class MessageRequestHandler extends SimpleChannelInboundHandler<MessageRe
         messageResponsePacket.setMessage(messageRequestPacket.getMessage());
         log.info("MessageRequestHandler channelRead0 .......{}", JSON.toJSONString(messageResponsePacket));
         // 消息接收方Channel
-        Channel toUserChannel = SessionUtil.getChannelByUserId(messageRequestPacket.getToUserId());
-        if(toUserChannel != null && SessionUtil.hasLogin(toUserChannel)) {
-            toUserChannel.writeAndFlush(messageResponsePacket).addListener(future -> {
-//                if(future.isSuccess()) {
-                if(future.isDone()) {
-                    long endTime = System.currentTimeMillis();
-                    System.out.println("["+sendSession.getUserId()+":"+ sendSession.getUserName()+ "]发送消息["+messageRequestPacket.getMessage()+"]给["+messageRequestPacket.getToUserId()+"]成功，耗时：" + (endTime - startTime) + "毫秒");
-                }
-//                else {
-//                    System.err.println("消息发送失败！");
-//                }
-            });
+        Channel toUserChannel = ServerSessionUtil.getChannelByUserId(messageRequestPacket.getToUserId());
+        if(toUserChannel != null && ServerSessionUtil.hasLogin(toUserChannel)) {
+            messageResponsePacket.setSuccess(true);
+            messageResponsePacket.setToUserId(messageRequestPacket.getToUserId());
+            toUserChannel.writeAndFlush(messageResponsePacket);
         } else {
+            messageResponsePacket.setSuccess(false);
+            messageResponsePacket.setReason("[" + messageRequestPacket.getToUserId() + "]不在线，发送失败！");
             System.err.println("[" + messageRequestPacket.getToUserId() + "]不在线，发送失败！");
         }
+        ctx.channel().writeAndFlush(messageResponsePacket);
     }
 }

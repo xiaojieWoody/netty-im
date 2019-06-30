@@ -9,13 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import netty.im.protocol.PacketCodec;
 
 @Slf4j
+//@ChannelHandler.Sharable
 public class Spliter extends LengthFieldBasedFrameDecoder {
 
     public static final int LENGTH_FIELD_LENGTH = 4;
     private static final int LENGTH_FIELD_OFFSET = 7;
 
 //    public static final Spliter INSTANCE = new Spliter();
-
+//
 //    private Spliter() {
 //        super(Integer.MAX_VALUE, LENGTH_FIELD_OFFSET, LENGTH_FIELD_LENGTH);
 //    }

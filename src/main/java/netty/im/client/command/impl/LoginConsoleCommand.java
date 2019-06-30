@@ -6,10 +6,12 @@ import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import netty.im.client.command.ConsoleCommand;
 import netty.im.protocol.request.LoginRequestPacket;
+import netty.im.util.ClientSessionUtil;
 
 import java.util.Scanner;
 @Slf4j
 public class LoginConsoleCommand implements ConsoleCommand {
+
     @Override
     public void exec(Scanner scanner, Channel channel) {
         LoginRequestPacket loginRequestPacket = new LoginRequestPacket();

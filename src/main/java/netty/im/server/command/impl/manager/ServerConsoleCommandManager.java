@@ -1,15 +1,14 @@
-package netty.im.server.command.impl;
+package netty.im.server.command.impl.manager;
 
-import com.alibaba.fastjson.JSON;
-import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
 import netty.im.server.command.ServerConsoleCommand;
+import netty.im.server.command.impl.ServerAllPushConsoleCommand;
+import netty.im.server.command.impl.ServerGroupPushConsoleCommand;
+import netty.im.server.command.impl.ServerSinglePushConsoleCommand;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-
-import static netty.im.protocol.command.Command.SINGLE_PUSH;
 
 @Slf4j
 public class ServerConsoleCommandManager implements ServerConsoleCommand {
@@ -19,7 +18,9 @@ public class ServerConsoleCommandManager implements ServerConsoleCommand {
     private ServerConsoleCommandManager(){
         serverConsoleCommandMap = new HashMap<>();
 
-        serverConsoleCommandMap.put(SINGLE_PUSH, ServerSinglePushConsoleCommand.INSTANCE);
+        serverConsoleCommandMap.put("pushSingle", ServerSinglePushConsoleCommand.INSTANCE);
+        serverConsoleCommandMap.put("pushGroup", ServerGroupPushConsoleCommand.INSTANCE);
+        serverConsoleCommandMap.put("pushAll", ServerAllPushConsoleCommand.INSTANCE);
 //        serverConsoleCommandMap.put("11", ServerSinglePushConsoleCommand.INSTANCE);
     }
 
@@ -30,7 +31,6 @@ public class ServerConsoleCommandManager implements ServerConsoleCommand {
         String command = scanner.next();
         log.info("ServerConsoleCommandManager exec......指令：{}", command);
         ServerConsoleCommand serverConsoleCommand = serverConsoleCommandMap.get(command);
-        log.info("ServerConsoleCommandManager exec......实现：{}", JSON.toJSONString(serverConsoleCommand));
         if(serverConsoleCommand == null){
             System.out.println("不识别[" + command +"]指令！");
             return;
